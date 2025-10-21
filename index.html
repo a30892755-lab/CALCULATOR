@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculator</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f6fa;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background-color: #111827;
+      color: #f5f6fa;
+    }
+    .calculator {
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode .calculator {
+      background-color: #1f2937;
+      color: #f5f6fa;
+      box-shadow: 0 5px 20px rgba(255, 255, 255, 0.1);
+    }
+    .calculator h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+    .display {
+      background-color: #e9ecf0;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: right;
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode .display {
+      background-color: #374151;
+      color: #f9fafb;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    button {
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    button:hover { opacity: 0.9; }
+    .btn-gray { background-color: #d1d5db; color: #111827; }
+    .btn-blue { background-color: #3b82f6; color: white; }
+    .btn-green { background-color: #22c55e; color: white; }
+    .btn-red { background-color: #ef4444; color: white; }
+    .btn-dark { background-color: #6b7280; color: white; }
+    .wide { grid-column: span 2; }
+    .toggle-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .toggle-switch input { display: none; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      border-radius: 24px;
+      transition: 0.4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.4s;
+    }
+    input:checked + .slider {
+      background-color: #3b82f6;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="toggle-container">
+      <h2>Calculator</h2>
+      <label class="toggle-switch">
+        <input type="checkbox" id="modeToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="btn-red" onclick="clearDisplay()">C</button>
+      <button class="btn-dark" onclick="deleteLast()">DEL</button>
+      <button class="btn-blue" onclick="appendToDisplay('÷')">÷</button>
+      <button class="btn-blue" onclick="appendToDisplay('×')">×</button>
+
+      <button class="btn-gray" onclick="appendToDisplay('7')">7</button>
+      <button class="btn-gray" onclick="appendToDisplay('8')">8</button>
+      <button class="btn-gray" onclick="appendToDisplay('9')">9</button>
+      <button class="btn-blue" onclick="appendToDisplay('-')">-</button>
+
+      <button class="btn-gray" onclick="appendToDisplay('4')">4</button>
+      <button class="btn-gray" onclick="appendToDisplay('5')">5</button>
+      <button class="btn-gray" onclick="appendToDisplay('6')">6</button>
+      <button class="btn-blue" onclick="appendToDisplay('+')">+</button>
+
+      <button class="btn-gray" onclick="appendToDisplay('1')">1</button>
+      <button class="btn-gray" onclick="appendToDisplay('2')">2</button>
+      <button class="btn-gray" onclick="appendToDisplay('3')">3</button>
+      <button class="btn-green" onclick="calculateResult()">=</button>
+
+      <button class="btn-gray wide" onclick="appendToDisplay('0')">0</button>
+      <button class="btn-gray" onclick="appendToDisplay('.')">.</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const modeToggle = document.getElementById('modeToggle');
+
+    modeToggle.addEventListener('change', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    function clearDisplay() {
+      display.innerText = '0';
+    }
+
+    function deleteLast() {
+      if (display.innerText.length === 1 || display.innerText === '0') {
+        display.innerText = '0';
+      } else {
+        display.innerText = display.innerText.slice(0, -1);
+      }
+    }
+
+    function appendToDisplay(value) {
+      if (display.innerText === '0') {
+        display.innerText = value;
+      } else {
+        display.innerText += value;
+      }
+    }
+
+    function calculateResult() {
+      try {
+        let expression = display.innerText.replace(/×/g, '*').replace(/÷/g, '/');
+        let result = eval(expression);
+        display.innerText = result;
+      } catch (error) {
+        display.innerText = 'Error';
+      }
+    }
+  </script>
+</body>
+</html>
